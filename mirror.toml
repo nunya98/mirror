@@ -1,0 +1,64 @@
+# Halloween mirror — supervisor configuration.
+# Precedence:  built-in defaults < this file < MIRROR_* env vars < --set flags
+# The config file itself is found at <install root>/mirror.toml, or $MIRROR_CONFIG.
+
+[general]
+# Leave commented to default to the directory this tree is installed in.
+# root = "/opt/mirror"
+log_level = "info"
+
+[paths]
+calm_dir  = "media/calm"     # relative to root
+scare_dir = "media/scares"
+
+[mpv]
+binary        = "mpv"
+socket        = "/run/mirror/mpv.sock"
+audio_enabled = true
+audio_device  = "alsa/hdmi:CARD=vc4hdmi"   # or alsa/sysdefault:CARD=Device for a USB dongle
+volume_calm   = 0
+volume_scare  = 80
+# Anything appended verbatim to the mpv command line.
+# extra_args = ["--term-status-msg=drops: ${frame-drop-count}"]
+extra_args = []
+
+[pir]
+enabled          = true
+gpio             = 17        # BCM numbering
+active_high      = true      # HC-SR501 H-mode output is active high
+warmup_seconds   = 60        # ignore motion for this long after start
+cooldown_seconds = 50        # PIR lockout after a scare finishes
+debounce_ms      = 200
+poll_hz          = 20
+
+[input]
+enabled      = true
+device       = ""            # "" = auto-detect; else /dev/input/by-id/...
+grab         = true          # EVIOCGRAB so the console never sees the keys
+set_numlock  = true          # drive the pad's NumLock LED on at startup
+debounce_ms  = 250
+
+# Both NumLock-on (KEY_KP*) and NumLock-off (navigation) codes are mapped to the
+# same action, so an accidental NumLock press cannot break the prop.
+# Action grammar:  scare:<index|name>  |  calm  |  toggle_pause
+[input.keymap]
+KEY_KP1    = "scare:1"
+KEY_KP2    = "scare:2"
+KEY_KP3    = "scare:3"
+KEY_END    = "scare:1"
+KEY_DOWN   = "scare:2"
+KEY_PGDN   = "scare:3"
+KEY_KP0    = "calm"
+KEY_INSERT = "calm"
+
+[scare]
+interrupt_current = false    # a scare button never cuts off a scare already playing
+allow_abort       = true     # but the explicit `calm` action always can
+avoid_repeat      = true     # never roll the same random scare twice in a row
+shuffle_calm      = true
+
+[web]
+enabled = true
+bind    = "0.0.0.0"
+port    = 8080
+

@@ -1,0 +1,22 @@
+[Unit]
+Description=Halloween mirror supervisor (PIR + keypad + mpv)
+After=multi-user.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/mirror
+# Leading '-' means "do not fail if the file is absent".
+EnvironmentFile=-/opt/mirror/mirror.env
+# Creates /run/mirror on tmpfs with the right ownership, and clears it on stop,
+# so a stale mpv socket can never block the next start.
+RuntimeDirectory=mirror
+RuntimeDirectoryMode=0750
+ExecStart=/opt/mirror/bin/mirror-supervisor
+Restart=always
+RestartSec=2
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+
