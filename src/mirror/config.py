@@ -44,6 +44,7 @@ DEFAULTS: dict[str, dict[str, Any]] = {
         "enabled": True,
         "gpio": 17,
         "active_high": True,
+	"pull": "auto",
         "warmup_seconds": 60,
         "cooldown_seconds": 50,
         "debounce_ms": 200,
@@ -61,7 +62,7 @@ DEFAULTS: dict[str, dict[str, Any]] = {
             "KEY_KP3": "scare:3",
             "KEY_END": "scare:1",
             "KEY_DOWN": "scare:2",
-            "KEY_PGDN": "scare:3",
+            "KEY_PAGEDOWN": "scare:3",
             "KEY_KP0": "calm",
             "KEY_INSERT": "calm",
         },
@@ -80,6 +81,7 @@ DEFAULTS: dict[str, dict[str, Any]] = {
 }
 
 _TRUE = {"1", "true", "yes", "on", "y", "t"}
+_FALSE = {"0", "false", "no", "off", "n", "f"}
 
 
 def _coerce(raw: str, like: Any) -> Any:

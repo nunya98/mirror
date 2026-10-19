@@ -15,17 +15,19 @@ scare_dir = "media/scares"
 binary        = "mpv"
 socket        = "/run/mirror/mpv.sock"
 audio_enabled = true
-audio_device  = "alsa/hdmi:CARD=vc4hdmi"   # or alsa/sysdefault:CARD=Device for a USB dongle
+#audio_device  = "alsa/hdmi:CARD=vc4hdmi"   # or alsa/sysdefault:CARD=Device for a USB dongle
+audio_device = "alsa/sysdefault:CARD=Device"
 volume_calm   = 0
 volume_scare  = 80
 # Anything appended verbatim to the mpv command line.
 # extra_args = ["--term-status-msg=drops: ${frame-drop-count}"]
-extra_args = []
+extra_args = ["--quiet"]
 
 [pir]
 enabled          = true
 gpio             = 17        # BCM numbering
 active_high      = true      # HC-SR501 H-mode output is active high
+pull		 = "auto"    # auto|up|down|none - "auto" biases towared inactive (pulldown)
 warmup_seconds   = 60        # ignore motion for this long after start
 cooldown_seconds = 50        # PIR lockout after a scare finishes
 debounce_ms      = 200

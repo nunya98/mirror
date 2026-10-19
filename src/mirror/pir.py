@@ -30,15 +30,24 @@ class PirWatcher(threading.Thread):
     # ------------------------------------------------------------------ #
     # GPIO backends
     # ------------------------------------------------------------------ #
+    def _pull(self) -> str:
+        """Resolve the bias: 'auto' pulls toward the inactive level."""
+        mode = str(self.cfg["pir"].get("pull", "auto")).lower()
+        if mode == "auto":
+            return "down" if self.cfg["pir"]["active_high"] else "up"
+        return mode
+
     def _open(self) -> None:
+	pull = "down" if self.cfg["pir"]["active_high"] else "up"
         try:
             import lgpio  # type: ignore
 
             handle = lgpio.gpiochip_open(0)
-            lgpio.gpio_claim_input(handle, self.pin)
+            flags = lgpio.SET_PULL_DOWN if pull == "down" else lgpio.SET_PULL_UP
+            lgpio.gpio_claim_input(handle, self.pin, flags)
             self._backend = "lgpio"
             self._handle = handle
-            self.log.info("PIR on BCM%d via lgpio (gpiochip0)", self.pin)
+            self.log.info("PIR on BCM%d via lgpio (gpiochip0), pull=%s", self.pin, pull)
             return
         except Exception as exc:  # noqa: BLE001 - fall through to the next backend
             self.log.debug("lgpio unavailable: %s", exc)
@@ -46,12 +55,13 @@ class PirWatcher(threading.Thread):
         try:
             import RPi.GPIO as GPIO  # type: ignore
 
+            bias = GPIO.PUD_DOWN if pull == "down" else GPIO.PUD_UP
             GPIO.setwarnings(False)
             GPIO.setmode(GPIO.BCM)
-            GPIO.setup(self.pin, GPIO.IN)
+            GPIO.setup(self.pin, GPIO.IN, pull_up_down=bias)
             self._backend = "rpi"
             self._handle = GPIO
-            self.log.info("PIR on BCM%d via RPi.GPIO", self.pin)
+            self.log.info("PIR on BCM%d via RPi.GPIO, pull=%s", self.pin, pull)
             return
         except Exception as exc:  # noqa: BLE001
             self.log.debug("RPi.GPIO unavailable: %s", exc)
