@@ -33,7 +33,7 @@ poll_hz          = 20
 
 [input]
 enabled      = true
-device       = ""            # "" = auto-detect; else /dev/input/by-id/...
+device       = "/dev/input/by-id/usb-YICHIP_2.4G_Receiver_b120300001-event-kbd"   # "" = auto-detect; else /dev/input/by-id/...
 grab         = true          # EVIOCGRAB so the console never sees the keys
 set_numlock  = true          # drive the pad's NumLock LED on at startup
 debounce_ms  = 250
@@ -47,7 +47,7 @@ KEY_KP2    = "scare:2"
 KEY_KP3    = "scare:3"
 KEY_END    = "scare:1"
 KEY_DOWN   = "scare:2"
-KEY_PGDN   = "scare:3"
+KEY_PAGEDOWN = "scare:3"
 KEY_KP0    = "calm"
 KEY_INSERT = "calm"
 
